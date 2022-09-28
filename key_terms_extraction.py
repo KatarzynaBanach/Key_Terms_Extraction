@@ -47,7 +47,7 @@ def print_headers_and_words(news):
         print(*list(dict(v).keys()))
 
 
-def create_five_most_common(news):
+def create_five_most_common(news, n):
     news_words = [' '.join(v) for v in news.values()]
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(news_words)
@@ -57,18 +57,19 @@ def create_five_most_common(news):
     for art in tfidf_matrix.toarray():
         words = {w: s for s, w in zip(art, terms)}
         words = sorted(words.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
-        nouns_only.append(words[0:5])
+        nouns_only.append(words[0:n])
 
     titles = list(news.keys())
-    return {t: n for t, n in zip(titles, nouns_only)}
+    return {t: nn for t, nn in zip(titles, nouns_only)}
 
 
 def main():
-    file = 'news.xml'
+    file = input()
+    n = int(input())
     root = etree.parse(file).getroot()
     news = {}
     news = header_title_dict(root, news)
-    news = create_five_most_common(news)
+    news = create_five_most_common(news, n)
     print_headers_and_words(news)
 
     
